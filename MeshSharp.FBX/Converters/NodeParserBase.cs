@@ -388,22 +388,22 @@ namespace AssetRipper.MeshSharp.FBX.Converters
 				switch (n["Type"].Value)
 				{
 					case "LayerElementNormal":
-						geometry.Layers.Add(BuildElementLayerNormal(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers[0].Add(BuildElementLayerNormal(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementBinormal":
-						geometry.Layers.Add(BuildElementLayerBinormal(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers[0].Add(BuildElementLayerBinormal(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementTangent":
-						geometry.Layers.Add(BuildElementLayerTangent(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers[0].Add(BuildElementLayerTangent(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementMaterial":
-						geometry.Layers.Add(BuildLayerElementMaterial(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers[0].Add(BuildLayerElementMaterial(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementSmoothing":
 						//geometry.Layers.Add(BuildLayerElementSmoothing(node[n["Type"].Value.ToString()]));
 						break;
 					case "LayerElementUV":
-						geometry.Layers.Add(BuildLayerElementUV(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers[0].Add(BuildLayerElementUV(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementUserData":
 						break;

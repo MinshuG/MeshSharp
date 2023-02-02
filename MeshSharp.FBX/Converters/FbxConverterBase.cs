@@ -326,64 +326,69 @@ namespace AssetRipper.MeshSharp.FBX.Converters
 			return arr.ToArray();
 		}
 
-		protected void buildMeshLayers(FbxNode parent, IEnumerable<LayerElement> layers)
+		protected void buildMeshLayers(FbxNode parent, IEnumerable<IEnumerable<LayerElement>> layersCollection)
 		{
-			FbxNode layer = new FbxNode("Layer", 0);
-			layer.Nodes.Add(new FbxNode("Version", 100));
-			parent.Nodes.Add(layer);
-
-			foreach (var item in layers)
+			var layerIndex = -1;
+			foreach (var layers in layersCollection)
 			{
-				FbxNode layerType = null;
+				layerIndex++;
+				FbxNode layer = new FbxNode("Layer", layerIndex);
+                layer.Nodes.Add(new FbxNode("Version", 100));
+                parent.Nodes.Add(layer);
 
-				switch (item)
-				{
-					case LayerElementMaterial layerElement:
-						layerType = buildLayerElementMaterial(layerElement);
-						break;
-					case LayerElementPolygonGroup layerElement:
-						layerType = buildLayerElementPolygonGroup(layerElement);
-						break;
-					case LayerElementBinormal layerElement:
-						layerType = buildLayerElementBinormal(layerElement);
-						break;
-					case LayerElementUV layerElement:
-						layerType = buildLayerElementUV(layerElement);
-						break;
-					case LayerElementSmoothing layerElement:
-						//layerType = buildElementSmoothing(layerElement);
-						break;
-					case LayerElementTangent layerElement:
-						layerType = buildLayerElementTangent(layerElement);
-						break;
-					case LayerElementNormal layerElement:
-						layerType = buildLayerElementNormal(layerElement);
-						break;
-					case LayerElementVertexColor layerElement:
-						layerType = buildLayerElementVertexColor(layerElement);
-						break;
-					case LayerElementVertexCrease _:
-					case LayerElementEdgeCrease _:
-					case LayerElementUserData _:
-					case LayerElementVisibility _:
-					case LayerElementSpecular _:
-					case LayerElementWeight _:
-					case LayerElementHole _:
-						break;
-					default:
-						System.Diagnostics.Debug.Fail($"{item.GetType().Name}");
-						break;
+                foreach (var item in layers)
+                {
+                	FbxNode layerType = null;
+    
+                	switch (item)
+                	{
+                		case LayerElementMaterial layerElement:
+                			layerType = buildLayerElementMaterial(layerElement, layerIndex);
+                			break;
+                		case LayerElementPolygonGroup layerElement:
+                			layerType = buildLayerElementPolygonGroup(layerElement, layerIndex);
+                			break;
+                		case LayerElementBinormal layerElement:
+                			layerType = buildLayerElementBinormal(layerElement, layerIndex);
+                			break;
+                		case LayerElementUV layerElement:
+                			layerType = buildLayerElementUV(layerElement, layerIndex);
+                			break;
+                		case LayerElementSmoothing layerElement:
+                			//layerType = buildElementSmoothing(layerElement);
+                			break;
+                		case LayerElementTangent layerElement:
+                			layerType = buildLayerElementTangent(layerElement, layerIndex);
+                			break;
+                		case LayerElementNormal layerElement:
+                			layerType = buildLayerElementNormal(layerElement, layerIndex);
+                			break;
+                		case LayerElementVertexColor layerElement:
+                			layerType = buildLayerElementVertexColor(layerElement, layerIndex);
+                			break;
+                		case LayerElementVertexCrease _:
+                		case LayerElementEdgeCrease _:
+                		case LayerElementUserData _:
+                		case LayerElementVisibility _:
+                		case LayerElementSpecular _:
+                		case LayerElementWeight _:
+                		case LayerElementHole _:
+                			break;
+                		default:
+                			System.Diagnostics.Debug.Fail($"{item.GetType().Name}");
+                			break;
+                	}
+    
+                	if (layerType == null)
+                		continue;
+    
+                	FbxNode type = new FbxNode("LayerElement");
+                	type.Nodes.Add(new FbxNode("Type", layerType.Name));
+                	type.Nodes.Add(new FbxNode("TypedIndex", 0));
+    
+                	layer.Nodes.Add(type);
+                	parent.Nodes.Add(layerType);
 				}
-
-				if (layerType == null)
-					continue;
-
-				FbxNode type = new FbxNode("LayerElement");
-				type.Nodes.Add(new FbxNode("Type", layerType.Name));
-				type.Nodes.Add(new FbxNode("TypedIndex", 0));
-
-				layer.Nodes.Add(type);
-				parent.Nodes.Add(layerType);
 			}
 		}
 
@@ -394,36 +399,36 @@ namespace AssetRipper.MeshSharp.FBX.Converters
 			node.Nodes.Add(new FbxNode("ReferenceInformationType", layer.ReferenceInformationType.ToString()));
 		}
 
-		public FbxNode buildLayerElementMaterial(LayerElementMaterial layer)
+		public FbxNode buildLayerElementMaterial(LayerElementMaterial layer, int index)
 		{
-			FbxNode node = new FbxNode("LayerElementMaterial", 0);
+			FbxNode node = new FbxNode("LayerElementMaterial", index);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("Materials", layer.Materials.ToArray()));
 			return node;
 		}
 
-		public FbxNode buildLayerElementPolygonGroup(LayerElementPolygonGroup layer)
+		public FbxNode buildLayerElementPolygonGroup(LayerElementPolygonGroup layer, int index)
 		{
-			FbxNode node = new FbxNode("LayerElementPolygonGroup", 0);
+			FbxNode node = new FbxNode("LayerElementPolygonGroup", index);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
 			//node.Nodes.Add(new FbxNode("Materials", layer..ToArray()));
 			return node;
 		}
 
-		public FbxNode buildLayerElementBinormal(LayerElementBinormal layer)
+		public FbxNode buildLayerElementBinormal(LayerElementBinormal layer, int index)
 		{
-			FbxNode node = new FbxNode("LayerElementBinormal", 0);
+			FbxNode node = new FbxNode("LayerElementBinormal", index);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("BiNormals", layer.BiNormals.SelectMany(x => x.GetComponents()).ToArray()));
 			return node;
 		}
 
-		public FbxNode buildLayerElementUV(LayerElementUV layer)
+		public FbxNode buildLayerElementUV(LayerElementUV layer, int index)
 		{
-			FbxNode node = new FbxNode("LayerElementUV", 0);
+			FbxNode node = new FbxNode("LayerElementUV", index);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("UV", layer.UV.SelectMany(x => x.GetComponents()).ToArray()));
@@ -431,27 +436,27 @@ namespace AssetRipper.MeshSharp.FBX.Converters
 			return node;
 		}
 
-		public FbxNode buildLayerElementTangent(LayerElementTangent layer)
+		public FbxNode buildLayerElementTangent(LayerElementTangent layer, int index)
 		{
-			FbxNode node = new FbxNode("LayerElementTangent", 0);
+			FbxNode node = new FbxNode("LayerElementTangent", index);
 			node.Nodes.Add(new FbxNode("Version", 102));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("Tangents", layer.Tangents.SelectMany(x => x.GetComponents()).ToArray()));
 			return node;
 		}
 
-		public FbxNode buildLayerElementNormal(LayerElementNormal layer)
+		public FbxNode buildLayerElementNormal(LayerElementNormal layer, int index)
 		{
-			FbxNode node = new FbxNode("LayerElementNormal", 0);
+			FbxNode node = new FbxNode("LayerElementNormal", index);
 			node.Nodes.Add(new FbxNode("Version", 102));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("Normals", layer.Normals.SelectMany(x => x.GetComponents()).ToArray()));
 			return node;
 		}
 
-		public FbxNode buildLayerElementVertexColor(LayerElementVertexColor layer)
+		public FbxNode buildLayerElementVertexColor(LayerElementVertexColor layer, int index)
 		{
-			FbxNode node = new FbxNode("LayerElementColor", 0);
+			FbxNode node = new FbxNode("LayerElementColor", index);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("Colors", layer.Colors.SelectMany(x => x.GetComponents()).ToArray()));
@@ -682,8 +687,8 @@ namespace AssetRipper.MeshSharp.FBX.Converters
 				properties.Nodes.Add(new FbxNode("P", "CoordAxisSign", "int", "Integer", "", 1));
 				properties.Nodes.Add(new FbxNode("P", "OriginalUpAxis", "int", "Integer", "", 2));
 				properties.Nodes.Add(new FbxNode("P", "OriginalUpAxisSign", "int", "Integer", "", 1));
-				properties.Nodes.Add(new FbxNode("P", "UnitScaleFactor", "double", "Number", "", 100000));
-				properties.Nodes.Add(new FbxNode("P", "OriginalUnitScaleFactor", "double", "Number", "", 100));
+				properties.Nodes.Add(new FbxNode("P", "UnitScaleFactor", "double", "Number", "", 100));
+				properties.Nodes.Add(new FbxNode("P", "OriginalUnitScaleFactor", "double", "Number", "", 1));
 				properties.Nodes.Add(new FbxNode("P", "AmbientColor", "ColorRGB", "Color", "", 0, 0, 0));
 				properties.Nodes.Add(new FbxNode("P", "DefaultCamera", "KString", "", "", "Producer"));
 				properties.Nodes.Add(new FbxNode("P", "TimeMode", "enum", "", "", 6));

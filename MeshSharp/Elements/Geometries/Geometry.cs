@@ -5,7 +5,7 @@ namespace AssetRipper.MeshSharp.Elements.Geometries
 {
 	public class Geometry : Element
 	{
-		public List<LayerElement> Layers { get; } = new List<LayerElement>();
+		public List<List<LayerElement>> Layers { get; } = new List<List<LayerElement>>();
 
 		public Geometry() : base() { }
 
